@@ -225,3 +225,82 @@ seeded generic control, not a uniform census; recorded as such.
   and corrected tables (FIRED=False, SURVIVAL=False replayed
   independently); kill criterion 2 — not fired. A corrected run 2 (F1, F2
   clause, F4) is warranted for the record, not the verdict.
+
+## 2026-08-11 · Entry 4 — Run 2 (corrected; authoritative)
+
+- **Who:** codex subagent applying the Entry-3 fixes (F1 [[7,2]] best d
+  3→2 with cited provenance; F2 gf4_linear k==0 clause removed; F4
+  [[n,n,1]] degenerate codes marked trivial; F7 css_decomposable OR'd in
+  dedup; F8 d written on all member records) plus a supplementary
+  per-distinct-A-enumerator table addressing F3; smoke-tested independently
+  by the wrapper agent; full run by the orchestrator. Script committed
+  before the run (commit 4e90cef). Frozen criterion logic unchanged.
+- **Command:** identical to entry 2 (same image, same seed 20260811; the
+  script now writes `test/results-run2-seed20260811.json`). Wall-clock
+  71.8 s. Validation gate: PASS (all five checks, unchanged).
+- **Results (primary registered combination, deduplicated, non-trivial):**
+  | subclass | n | fail | frac |
+  |---|---:|---:|---:|
+  | selfdual_graph | 13268 | 8456 | 0.637 |
+  | even_selfdual | 254 | 254 | 1.000 |
+  | css_constructed | 1258 | 497 | 0.395 |
+  | distance_optimal | 849 | 68 | 0.080 |
+  | css_constructed∩distance_optimal | 149 | 12 | 0.081 |
+  | selfdual_graph∩distance_optimal | 297 | 31 | 0.104 |
+  | gf4_linear | 10 | 6 | 0.600 |
+  | random_control | 1955 | 548 | 0.280 |
+  Matches the Entry-3 corrected predictions exactly (denominators shifted
+  −6 by the F4 trivial exclusion). gf4_linear is now honestly populated
+  (10 deduped members incl. [[5,1,3]] and Steane) but remains below the
+  floor of 20 — registered as untestable at n ≤ 8 rather than tested.
+- **Per-distinct-A sharpening (F3):** distinct self-dual A-enumerators
+  failing A/V2/C2, by n: 3: 0/3, 4: 1/5, 5: 6/10, 6: 15/23, 7: 39/46,
+  8: 101/116 (overall 162/203 = 0.80) — the failure rate *rises* with n
+  under per-enumerator counting. Under A/V2∘V3/C2: 2/203.
+- **Verdict:** kill criterion 1 **NOT FIRED** (distance_optimal 0.080 and
+  css∩distance_optimal 0.081 vs control 0.280; structure, not noise); the
+  pre-registered survival trigger (an exact-zero subclass under the
+  primary) again did not trigger. Kill criterion 2 not fired (entry 1).
+  → **status SURVIVING**, in a sharpened form:
+  - The naive claim ("self-dual ⇒ log-concave enumerator") is **false**:
+    a majority of self-dual codes at n ≤ 8 violate V2 log-concavity
+    (0.80 of distinct enumerators; worsening with n), and
+    ultra-log-concavity (= bivariate Lorentzianity) fails almost
+    everywhere in V2.
+  - The surviving form: pass/fail is strongly structured by
+    **distance-optimality** (0.080 vs 0.280 control; B−A/V2/C2 0.053 for
+    k>0), and under the even-reindexed variant the structure is nearly
+    exact — selfdual∩distance_optimal passes C1+C2+C3 at **0/31**, and
+    only 2/203 distinct self-dual enumerators fail V2∘V3/C2.
+  - The multivariate arm is dead at n ≤ 8 except on trivial product
+    states: the only C4-Lorentzian complete enumerators among 13,268
+    self-dual codes are the six edgeless graphs, (x_I+x_X)^n.
+- **Audit trail:** `test/results-run2-seed20260811.json` (45.18 MiB),
+  SHA-256
+  `f866dd60bc40a04f6c2497dec8021850eb7c85e93cd857c8860983ee2531bafd`.
+  Run-1 artifact remains frozen (entry 2 hash).
+- **Open problems for the next contributor (priority order):**
+  1. **Pre-register and test the sharpened hypothesis:** "the V2∘V3
+     enumerator of every distance-optimal self-dual additive GF(4) code is
+     Lorentzian (ULC, no internal zeros)." It went 0/31 here but was not a
+     registered criterion input; push to n = 9–12 via the Danielsen–Parker
+     LC-orbit classification (290 codes at n ≤ 8, 40 at n = 12 self-dual).
+     Identify the 2/203 V2∘V3 log-concavity violators and check whether
+     they are distance-suboptimal (they are candidates for the boundary of
+     the conjecture).
+  2. **Weight by LC orbits, not graph iso-classes:** rerun the self-dual
+     tables over one representative per LC-equivalence class
+     (Danielsen–Parker orbits) — the bivariate results are LC-invariant, so
+     this is the canonical census; the complete-enumerator results are not,
+     which needs a per-orbit min/max treatment.
+  3. **gf4_linear remains untested** (10 < 20 members at n ≤ 8; ω-closure
+     is not LC-invariant so graph representatives cannot certify a class).
+     Test GF(4)-linearity up to equivalence, or extend n.
+  4. **distance_optimal composition bias:** several (n,k) blocks at
+     n = 6..8 contributed zero members because seeded sampling never found
+     the optimum; seed known-optimal codes explicitly (codetables.de
+     generator matrices) before trusting subclass fractions near θ.
+  5. **Reformulate the multivariate arm** (C4 dead on all entangled codes
+     here): candidate replacements — Lorentzianity of the double/split
+     enumerator of Chen–Ren, or of B−A's complete form, or on the
+     M-convex-support closure rather than the raw support.
