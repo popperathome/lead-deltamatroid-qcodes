@@ -1,6 +1,6 @@
 # Weight enumerators of a natural class of quantum codes are Lorentzian
 
-**Status:** ⏳ QUEUED
+**Status:** 🟢 SURVIVING — tested, adversarially reviewed (run 1 reviewed, corrected run 2 authoritative; see ADDENDUMS.md). Surviving in sharpened form: log-concavity is *false* for most self-dual codes at n ≤ 8, but pass/fail is strongly structured by distance-optimality, and under even-reindexing distance-optimal self-dual codes are exactly Lorentzian (0/31); the 4-variable complete-enumerator form is dead except on product states.
 
 ## Claim
 
@@ -44,4 +44,8 @@ numpy in a container; hours):
 
 ## Log
 
-See ADDENDUMS.md (no compute spent yet).
+See ADDENDUMS.md: entry 1 literature check + conventions freeze; entry 2
+run 1 (23,465 codes, seed 20260811); entry 3 adversarial review (full
+independent recomputation; one distance-table bug, verdict stands); entry 4
+corrected run 2 (authoritative) with open problems for the next
+contributor.
