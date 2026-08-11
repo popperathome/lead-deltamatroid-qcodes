@@ -460,3 +460,68 @@ Lorentzian. (This is the exact-zero cell observed at n ≤ 8: 0/31.)
   commit time; database snapshot hashes inside the JSON.
 - **Bears on:** Entry-5 K1 — **FIRED** (pending adversarial review of
   this run, entry 8). Parent-lead kill criteria (entry 1): unaffected.
+
+## 2026-08-11 · Entry 8 — Adversarial review of the entry-7 kill: **KILL STANDS**
+
+- **Who:** Claude Opus subagent, independent reimplementation (own graph6
+  decoder, enumerator, database parser, exact ULC arithmetic; no imports
+  from extend.py/sweep.py; scripts in session scratchpad, recorded by
+  findings). Same container, stdlib only, deterministic.
+- **Dodecacode ground truth, three ways:** recomputation from graph6
+  `Kp@QHUK}Bvr~` gives A=[1,0,0,0,0,0,396,0,1485,0,1980,0,234], sum 4096,
+  d=6; exact MacWilliams self-duality holds in rationals; matches CRSS
+  quant-ph/9608006 §6 **verbatim** (including |Aut| = 648, matching the
+  stored field). Database = recomputation = literature.
+- **The decisive arithmetic:** C3 failure ratio is exactly **15/16**
+  (deficit 6.25%; entry-7's "6.3%" corrected here). Attack on the slicing
+  convention closed by testing all four readings: under every one of them
+  the dodecacode fails at least one of C1/C2/C3, so K1 fires regardless —
+  the convention is not load-bearing.
+- **Uniqueness, exhaustively:** all 1,374,482 database records reparsed:
+  type recomputed from distributions (0 mismatches; also re-derived
+  independently via D–P Thm 15: Type II ⟺ every vertex odd degree, 0
+  mismatches from graph6 alone), stored d vs min nonzero weight 0
+  mismatches, per-length totals/indecomposables/Tables 1,2,4,6,10 all
+  reproduced exactly; LC-orbit sizes sum to A000088 graph counts exactly
+  for every n ≤ 12 (incl. 165,091,172,592 at n=12) — the classification
+  partitions all graphs, none missing. **Strongest closure:** exhaustive
+  d ≥ 6 test over all 1,323,363 n=12 graph6 representatives using the
+  |S ∪ P(S)| ≥ |S| witness bound: exactly one code has d ≥ 6 — the
+  dodecacode. The kill survives even if every stored field were corrupt.
+  dmaxII per even n = 2,2,4,4,4,6 with 1,2,1,3,19,1 attainers: confirmed;
+  Type II d must be even (parity argument confirmed), so d=6 is optimal
+  under the overall reading too (dmax_overall(12) = 6).
+- **Gate coverage:** dodecacode was in the recomputed set (all 3,079 n=12
+  Type II recomputed independently: 0 mismatches; 16,282 = 3,079 Type II
+  + 13,203 stride, arithmetic verified). n=14: all 1,020 extremal graphs
+  give the unique W₁₄ (matches D–P §5 verbatim), halved sequence passes
+  C1+C2+C3 with wide margins; note for writeups: the older
+  Bachoc–Gaborit count 490 is superseded by 1,020.
+- **Residual caveat, ruled not-a-defect but recorded:** the kill turns on
+  the C3 homogenization degree m = len−1 = 3 (forced by Brändén–Huh for
+  the tested standalone sequence, fixed before any n=12 compute); under
+  the alternative normalization m = n/2 = 6 the dodecacode *passes*
+  (ratio 3/2) while every other cell at n ≤ 14 is unchanged.
+  Re-normalizing now would be exactly the post-hoc rescue the frozen
+  workflow forbids. The alternative is therefore registered as the
+  honest **successor hypothesis** for a future pre-registration: "the
+  halved enumerator of every distance-optimal Type II code, homogenized
+  to degree n/2, is Lorentzian" — alive at n ≤ 14 as of this entry.
+  Context strengthening the kill: 82% of all n=12 Type II codes fail C3
+  (2,526/3,079), so the n ≤ 8 zero-cell (31 codes) was small-sample; and
+  Entry 5 pre-registered the single-code decisiveness explicitly.
+- **Documentation fixes recorded here (per review):** the C3 inequality
+  in the Entry-1 conventions is, explicitly,
+  a_j²·C(m,j−1)·C(m,j+1) ≥ a_{j−1}·a_{j+1}·C(m,j)² with m = (sequence
+  length − 1); dodecacode enumerator source: CRSS quant-ph/9608006 §6.
+- **Bears on:** Entry-5 K1 — **FIRED, verdict final**. The sharpened
+  hypothesis H1 (Lorentzian/ULC form) **DIED WITH HONORS at n = 12**,
+  killed by the unique dodecacode. Its weaker sibling — plain
+  log-concavity (C1+C2) of halved enumerators of distance-optimal
+  Type II codes — remains unrefuted at every tested length (n ≤ 12
+  complete census + n = 14 extremal class) and is the natural next
+  pre-registration together with the m = n/2 successor above. The
+  parent lead's own kill criteria (entry 1) remain un-fired; parent
+  status stays SURVIVING with the sharpened claim now precisely bounded
+  on both sides: GHZ orbits below (worst codes violate log-concavity),
+  dodecacode above (best code violates ultra-log-concavity).
