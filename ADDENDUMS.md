@@ -136,7 +136,7 @@ seeded generic control, not a uniform census; recorded as such.
   per-code generators/graph edges/derived seeds so no RNG replay is needed),
   SHA-256
   `fa05cb3110625a58eec80c33b160a59bbc329f2fc15d98e87eb3bfb888bbd3b1`.
-- **Flagged for adversarial review (entry 3):** (i) independent verification
+- **Flagged for review (see entry 3):** (i) independent verification
   of the 63.7% self-dual V2/C2 failure rate and of the distance-optimal
   cleanliness (these carry the verdict); (ii) gf4_linear subclass came out
   as n=1 deduped member — suspiciously low, possible flag bug; (iii)
@@ -147,3 +147,81 @@ seeded generic control, not a uniform census; recorded as such.
   recompute by hand; (vi) Descartes/char-poly eigenvalue routine on
   near-boundary Hessians; (vii) criterion-mapping code vs the frozen
   Entry-1 text.
+
+## 2026-08-11 · Entry 3 — Adversarial review of run 1
+
+- **Who:** Claude Opus subagent, independent reimplementation from the
+  definitions (own symplectic/enumerator/centralizer code written before
+  reading `sweep.py`; scripts in session scratchpad, recorded here by their
+  findings). Same container image (Python 3.12.13); float cross-paradigm
+  checks used pip `numpy==2.5.2` (pinned, recorded). Artifact SHA-256
+  verified against entry 2.
+- **What survived (full, not sampled):** A and B recomputed for **all 23,465
+  codes** (B via direct centralizer nullspace, no MacWilliams): 0 mismatches;
+  B additionally brute-forced over all 4^n Paulis on 154 codes: identical.
+  Dedup fingerprints rebuilt from scratch: 16,492 groups, identical sets.
+  Every requested crosstab cell reproduced exactly from independent code
+  (selfdual 8456/13268, distance_optimal 60/796, control 548/1955,
+  even_selfdual 254/254, V2∘V3 cells incl. selfdual∩distance_optimal 0/31).
+  All 6 C4 passers and 5 spot-checked failures confirmed with numpy
+  eigvalsh, exact recorded violations reproduced. Named codes verified by
+  hand: [[5,1,3]] A=(1,0,0,0,15,0), B−A support starts at d=3, and its
+  recorded B−A/V2/C2 failure is mathematically correct (V2 slice (30,0,18),
+  0² < 30·18); Steane and [[8,3,2]] failures likewise real; 3/4 named
+  failing is correct. Descartes/char-poly eigenvalue counting vs numpy on
+  48,184 Hessians (incl. 30,945 with exact zero eigenvalues): 0
+  disagreements, zeros never counted positive. Variant slicing checked on 14
+  adversarial sequences: 0 disagreements. Criterion code diffed word-by-word
+  against the Entry-1 freeze: faithful, control intersections correctly
+  excluded from candidates.
+- **Findings:**
+  - **F1 (MAJOR, changes numbers):** hard-coded distance table has
+    `[[7,2]] best d = 3`; correct value is **2** (codetables.de
+    lower=upper=2; CRSS quant-ph/9608006 Table III). Corrected cells:
+    distance_optimal 60/796=0.0754 → **68/855=0.0795**;
+    css∩distance_optimal 9/150=0.0600 → **12/155=0.0774**;
+    distance_optimal∩control 19/349 → 24/403=0.0596. All other entries of
+    the table confirmed correct, including existence of [[8,3,3]]
+    (Gottesman) ⇒ [[8,3,2]] rightly non-optimal, and the k=0 row matching
+    Danielsen–Parker Table 4 (1,2,2,2,3,4,3,4). **Verdict impact: none**
+    (binding candidates stay below θ=0.10; nothing reaches 0). Margin
+    caveat: binding candidate is ~0.02 below θ — the table is load-bearing
+    and must be cited data, not memory.
+  - **F2 (MAJOR, scope):** the pre-registered gf4_linear subclass was never
+    actually tested: ω-closure is **not** LC-invariant, and 0/13,598 graph
+    representatives are ω-closed (both hexacode graph representatives test
+    negative). An undocumented `k==0` clause additionally excluded 68
+    genuinely ω-closed codes (incl. [[5,1,3]], Steane). Without the clause:
+    16 non-trivial deduped members, fail 6/16 — still under the floor of
+    20; verdict unaffected, but this candidate produced no evidence.
+  - **F3 (MAJOR, interpretation):** "13,598 graph states = all self-dual
+    codes up to LC" is wrong as a census: there are only **290**
+    LC-inequivalent self-dual additive GF(4) codes for n ≤ 8
+    (Danielsen–Parker). The 63.7% is graph-isomorphism-weighted; per
+    distinct A-enumerator the failure fraction rises with n
+    (n=4: 0.20 → n=8: **0.87**). Direction robust under any weighting;
+    the specific number is a property of the frozen fingerprint scheme.
+  - **F4 (MINOR):** six degenerate [[n,n,1]] codes (S={I}) pass A/V2
+    vacuously (V2=[]), inflating denominators by 6; primary combination
+    unaffected (k>0 uses B−A).
+  - **F5 (MINOR, explained):** css_decomposable ≡ css_as_given in dedup
+    tables because the flag genuinely almost never fires outside CSS
+    constructions (16 raw exceptions, all merged by OR-semantics into
+    css_as_given groups); star-graph representatives are NOT
+    CSS-decomposable (e.g. Y0Y1Z2 ∈ S); like gf4_linear the flag is
+    representative-dependent, not LC-invariant.
+  - **F6 (MINOR, scientifically sharpest):** the only 6 self-dual codes
+    passing complete-enumerator Lorentzianity (C4) are the **edgeless
+    graphs** — unentangled product states |+⟩^⊗n with enumerator
+    (x_I+x_X)^n. At n ≤ 8 the multivariate/M-convex form of the claim
+    holds **only on trivial product states**.
+  - **F7/F8/F9 (MINOR):** css_decomposable not OR'd during dedup
+    aggregation (empirically zero impact); d written as null on
+    non-representative records; distance_optimal unpopulated at
+    [[6,1]],[[6,4]],[[7,2]],[[8,3]],[[8,6]] because seeded sampling at
+    n=6..8 never found the optimum — the subclass is biased toward easy
+    (n,k) and is 44% random controls.
+- **Bears on:** kill criterion 1 — **NOT FIRED stands** under both as-run
+  and corrected tables (FIRED=False, SURVIVAL=False replayed
+  independently); kill criterion 2 — not fired. A corrected run 2 (F1, F2
+  clause, F4) is warranted for the record, not the verdict.
