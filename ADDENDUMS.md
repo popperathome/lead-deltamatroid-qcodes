@@ -74,3 +74,76 @@ CSS-as-given, constructed CSS, distance-optimal, named codes, and pairwise
 intersections meeting the size floor. C3/C4 and other variants are reported
 as sharpening/scope, not as kill-criterion inputs. The random ensemble is a
 seeded generic control, not a uniform census; recorded as such.
+
+## 2026-08-11 · Entry 2 — Run 1 (full n ≤ 8 sweep)
+
+- **Who:** codex (gpt-5.6-sol) subagent implementing `test/sweep.py` per the
+  Entry-1 freeze, directed by Claude (Fable 5) orchestrator; smoke test
+  (--max-n 5) independently rerun by the wrapper agent; full run executed by
+  the orchestrator. `test/sweep.py` was committed to this repo *before* the
+  full run (commit d85867e).
+- **Command:**
+  `podman run --rm -v "$PWD":/work:z docker.io/library/python:3.12-slim python /work/test/sweep.py --seed 20260811`
+  (Python 3.12.13; stdlib only — no pip at all, a strictly-more-reproducible
+  deviation from the CLAUDE.md podman template). Seed 20260811. Wall-clock
+  73.7 s.
+- **Validation gate (all hard-asserted, PASS):** graph iso-class counts equal
+  OEIS A000088 through n=8 (…, 1044, 12346; 13,598 total); graph-state
+  closed-form enumerator vs symplectic spanning on all 52 graphs n ≤ 5;
+  named-code (n,k,d) self-checks ([[4,2,2]], [[5,1,3]], Steane [[7,1,3]],
+  [[8,3,2]]); MacWilliams transform vs direct centralizer enumeration on 816
+  codes; Brändén–Huh checker self-tests incl. Bell-pair sanity (V1 fails at
+  j=1 as predicted by the freeze).
+- **Catalog:** 23,465 raw codes → 16,492 deduplicated fingerprints
+  (13,598 graph states = all self-dual codes up to LC; exhaustive CSS
+  subspace pairs n ≤ 5 (6,363) + 500 seeded pairs each n = 6,7,8; 4 named;
+  1,900 seeded random controls n=4..8, k=1..n−2).
+- **Results, primary registered combination (A,V2,C2 for k=0; B−A,V2,C2 for
+  k>0), deduplicated, non-trivial:**
+  | subclass | n | fail | frac |
+  |---|---:|---:|---:|
+  | selfdual_graph | 13268 | 8456 | 0.637 |
+  | even_selfdual | 254 | 254 | 1.000 |
+  | css_constructed | 1264 | 497 | 0.393 |
+  | distance_optimal | 796 | 60 | 0.075 |
+  | css_constructed∩distance_optimal | 150 | 9 | 0.060 |
+  | selfdual_graph∩distance_optimal | 297 | 31 | 0.104 |
+  | random_control | 1955 | 548 | 0.280 |
+  - The 63.7% self-dual failure rate is genuine log-concavity violation, not
+    a zero artifact: A/V2/C1 (internal zeros) fails at only 4.6% for
+    selfdual_graph. The even_selfdual 100% failure IS the predicted parity
+    artifact (odd-weight interior zeros), which the frozen V3 handles:
+    under A/V2∘V3, even_selfdual fails C1 at 0.000 and C2 at 0.020, and
+    selfdual∩distance_optimal passes C1, C2, **and C3 (exact bivariate
+    Lorentzianity) at 0/31**.
+  - Sharpening tables (deduplicated fail fractions): A/V2/C3 (ULC) fails
+    ~1.000 selfdual, 0.765 distance_optimal — ultra-log-concavity is
+    generically false even where log-concavity holds; A/V2∘V3/C3:
+    distance_optimal 0.033, selfdual∩distance_optimal 0.000. B−A/V2/C2
+    (k>0): distance_optimal 0.053 vs random_control 0.280. Complete
+    4-variable enumerator C4: fails ≥ 0.89 everywhere (V1 and V2) — only 6
+    of 13,268 self-dual codes pass; the multivariate/M-convex form of the
+    claim is essentially dead generically at small n (which codes the 6 are
+    is left to the review).
+- **Criterion mapping:** kill criterion 1 **NOT FIRED** — pass/fail is
+  strongly structured, not noise: distance_optimal (0.075) and
+  css∩distance_optimal (0.060) sit far below the control (0.280) and below
+  θ=0.10. The pre-registered *survival trigger* (a ≥20-member subclass at
+  exactly zero failures under the primary combination) also did **not**
+  trigger — zero-failure subclasses appear only under the V2∘V3 sharpening.
+  Kill criterion 2: not fired (Entry 1).
+- **Audit trail:** `test/results-seed20260811.json` (45.19 MiB, includes
+  per-code generators/graph edges/derived seeds so no RNG replay is needed),
+  SHA-256
+  `fa05cb3110625a58eec80c33b160a59bbc329f2fc15d98e87eb3bfb888bbd3b1`.
+- **Flagged for adversarial review (entry 3):** (i) independent verification
+  of the 63.7% self-dual V2/C2 failure rate and of the distance-optimal
+  cleanliness (these carry the verdict); (ii) gf4_linear subclass came out
+  as n=1 deduped member — suspiciously low, possible flag bug; (iii)
+  css_decomposable ≡ css_constructed exactly in the dedup tables — verify
+  the flag isn't degenerate; (iv) hard-coded best-known-distance table
+  (from memory, incl. existence of [[8,3,3]] ⇒ [[8,3,2]] not optimal) vs
+  codetables.de; (v) 3/4 named codes failing B−A/V2/C2 (incl. [[5,1,3]]?) —
+  recompute by hand; (vi) Descartes/char-poly eigenvalue routine on
+  near-boundary Hessians; (vii) criterion-mapping code vs the frozen
+  Entry-1 text.
