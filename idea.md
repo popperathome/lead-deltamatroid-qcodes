@@ -1,6 +1,6 @@
 # Weight enumerators of a natural class of quantum codes are Lorentzian
 
-**Status:** 🟢 SURVIVING — tested, adversarially reviewed (run 1 reviewed, corrected run 2 authoritative; see ADDENDUMS.md). Surviving in sharpened form: log-concavity is *false* for most self-dual codes at n ≤ 8, but pass/fail is strongly structured by distance-optimality, and under even-reindexing distance-optimal self-dual codes are exactly Lorentzian (0/31); the 4-variable complete-enumerator form is dead except on product states.
+**Status:** 🟢 SURVIVING — tested and adversarially reviewed through the full Danielsen–Parker census n ≤ 12 (+ n = 14 extremal). The surviving claim is now bounded on both sides: log-concavity of the (halved) enumerator is false for most self-dual codes — the *only* Type II violators at n ≤ 8 are the GHZ orbits, the worst-distance codes — while every distance-optimal Type II code at every tested length is log-concave. The stronger Lorentzian/ULC form of that characterization was pre-registered (entry 5) and **died with honors at n = 12**: the unique optimal code, the dodecacode, is log-concave but misses ultra-log-concavity by exactly 15/16 (entries 7–8). The 4-variable complete-enumerator form is dead except on product states. Next pre-registrations queued in entry 8: plain log-concavity of optimal Type II enumerators, and the m = n/2-homogenized Lorentzian successor (both alive at n ≤ 14).
 
 ## Claim
 
