@@ -23,7 +23,7 @@ Use `--out PATH` to override the default artifact path.
 
 Artifacts:
 
-- `results-seed<seed>.json`: reproducible metadata and conventions, validation
+- `results-run2-seed<seed>.json`: reproducible metadata and conventions, validation
   results, raw code records, complete-enumerator data for deduplicated
   representatives, raw/deduplicated cross-tabs, and the frozen kill-criterion
   mapping.

@@ -27,9 +27,10 @@ from typing import Iterable, Iterator
 GRAPH_COUNTS = {1: 1, 2: 2, 3: 4, 4: 11, 5: 34, 6: 156, 7: 1044, 8: 12346}
 SELFDUAL_MAX_DISTANCE = {1: 1, 2: 2, 3: 2, 4: 2, 5: 3, 6: 4, 7: 3, 8: 4}
 
-# From memory -- independently verified in adversarial review.  Entries are
-# best-known binary stabilizer distances d for [[n,k]], n <= 8.  The k=0
-# column is replaced by the Danielsen--Parker maxima above.
+# Best-known binary stabilizer distances d for [[n,k]], n <= 8.  The whole
+# table was verified in the Entry-3 adversarial review against codetables.de
+# QECC q=4 and CRSS arXiv:quant-ph/9608006 Table III; the k=0 row is the
+# Danielsen--Parker Table 4 maxima above.
 BEST_KNOWN_DISTANCE = {
     1: {1: 1},
     2: {1: 1, 2: 1},
@@ -37,7 +38,7 @@ BEST_KNOWN_DISTANCE = {
     4: {1: 2, 2: 2, 3: 1, 4: 1},
     5: {1: 3, 2: 2, 3: 1, 4: 1, 5: 1},
     6: {1: 3, 2: 2, 3: 2, 4: 2, 5: 1, 6: 1},
-    7: {1: 3, 2: 3, 3: 2, 4: 2, 5: 1, 6: 1, 7: 1},
+    7: {1: 3, 2: 2, 3: 2, 4: 2, 5: 1, 6: 1, 7: 1},
     8: {1: 3, 2: 3, 3: 3, 4: 2, 5: 2, 6: 2, 7: 1, 8: 1},
 }
 
@@ -665,9 +666,9 @@ def structural_flags(spec: CodeSpec, k: int, elements: list[int], a: list[int]) 
     n = spec.n
     element_set = set(elements)
     even = all(index % 2 == 0 for index, value in enumerate(a) if index and value)
-    gf4 = False
-    if k == 0:
-        gf4 = all(packed((z, x ^ z), n) in element_set for x, z in spec.generators)
+    # Omega-closure is not local-Clifford-invariant: on graph codes this flag
+    # describes the supplied graph representative, not its full LC class.
+    gf4 = all(packed((z, x ^ z), n) in element_set for x, z in spec.generators)
     pure_x = sum((value >> n) == 0 for value in elements)
     mask = (1 << n) - 1
     pure_z = sum((value & mask) == 0 for value in elements)
@@ -832,13 +833,16 @@ def process_rows(core_rows: list[dict[str, object]]) -> tuple[list[dict[str, obj
         best = SELFDUAL_MAX_DISTANCE[spec.n] if k == 0 else BEST_KNOWN_DISTANCE[spec.n][k]
 
         aggregate_flags = dict(representative["flags"])
-        for flag in ("graph_state", "css_as_given", "named", "random_control", "gf4_linear"):
+        for flag in ("graph_state", "css_as_given", "named", "random_control", "gf4_linear",
+                     "css_decomposable"):
             aggregate_flags[flag] = any(bool(member["flags"][flag]) for member in members)
         aggregate_flags["distance_optimal"] = distance == best
 
         primary = representative["A"] if k == 0 else representative["BA"]
         primary_v2 = variants(primary)["V2"]
-        aggregate_flags["trivial"] = spec.n <= 2 or len(primary_v2) <= 2
+        no_nonidentity_stabilizer = not any(representative["A"][1:])
+        aggregate_flags["trivial"] = (spec.n <= 2 or len(primary_v2) <= 2
+                                      or no_nonidentity_stabilizer)
 
         if fp not in check_cache:
             enumerator_checks: dict[str, object] = {"A": all_sequence_checks(representative["A"])}
@@ -864,7 +868,7 @@ def process_rows(core_rows: list[dict[str, object]]) -> tuple[list[dict[str, obj
             member["complete_checks"] = complete
             member["representative_id"] = representative_id
             member["is_representative"] = member_index == 0
-            member["distance"] = distance if member_index == 0 else None
+            member["distance"] = distance
         representative["dedup_flags"] = aggregate_flags
         representative["distance"] = distance
         dedup_rows.append(representative)
@@ -995,6 +999,32 @@ def build_criterion(rows: list[dict[str, object]]) -> dict[str, object]:
             "per_subclass": per_subclass}
 
 
+def build_selfdual_per_distinct_a(rows: list[dict[str, object]]) -> dict[str, object]:
+    distinct: dict[tuple[int, tuple[int, ...]], dict[str, object]] = {}
+    for row in rows:
+        spec = row["spec"]
+        assert isinstance(spec, CodeSpec)
+        if 3 <= spec.n <= 8 and row["k"] == 0 and spec.graph_state:
+            key = spec.n, tuple(row["A"])
+            distinct.setdefault(key, row["checks"]["A"])
+
+    def summarize(items: list[dict[str, object]]) -> dict[str, int]:
+        return {
+            "n_distinct_A": len(items),
+            "n_fail_A_V2_C2": sum(not checks["V2"]["c2"]["pass"] for checks in items),
+            "n_fail_A_V2oV3_C2": sum(
+                "V2oV3" in checks and not checks["V2oV3"]["c2"]["pass"]
+                for checks in items
+            ),
+        }
+
+    per_n = {
+        str(n): summarize([checks for (item_n, _), checks in distinct.items() if item_n == n])
+        for n in range(3, 9)
+    }
+    return {"per_n": per_n, "overall": summarize(list(distinct.values()))}
+
+
 def conventions() -> dict[str, object]:
     return {
         "paulis": "n-qubit Paulis modulo phase are symplectic bit pairs (x,z); phases do not affect any weight statistic",
@@ -1018,14 +1048,14 @@ def conventions() -> dict[str, object]:
         },
         "flags": {
             "selfdual": "k==0", "even": "all nonzero A support weights are even",
-            "gf4_linear": "k=0 and stabilizer span closed under (x,z)->(z,x XOR z)",
-            "css_decomposable": "|S_X|*|S_Z|=|S| (basis-independent operational CSS flag)",
+            "gf4_linear": "stabilizer span closed under (x,z)->(z,x XOR z); omega-closure is not local-Clifford-invariant, so a graph representative tests that representative, not its LC class",
+            "css_decomposable": "|S_X|*|S_Z|=|S| (basis-independent operational CSS flag); representative-dependent and not fingerprint-determined, like gf4_linear",
             "css_as_given": "constructed as CSS / all supplied generators pure X or pure Z",
             "graph_state": "graph construction provenance", "named": "named-code provenance",
             "distance_optimal": "d equals the hard-coded n<=8 best-known table",
-            "trivial": "n<=2 or registered-primary V2 sequence length<=2",
+            "trivial": "n<=2, registered-primary V2 sequence length<=2, or A has no nonzero index >=1 (S={identity}, the degenerate [[n,n,1]] code)",
         },
-        "dedup": "fingerprint=(n,k,A,B,sorted complete_A); first seen is representative; provenance flags OR across members; gf4_linear means any member has it",
+        "dedup": "fingerprint=(n,k,A,B,sorted complete_A); first seen is representative; provenance flags OR across members; representative-dependent gf4_linear and css_decomposable each mean any member has the flag",
         "cross_tabs": "raw and deduplicated; trivial codes excluded; pairwise intersections emitted when population >=20",
         "criterion_registration": {
             "primary": "A/V2/C2 for k=0; B-A/V2/C2 for k>0",
@@ -1049,6 +1079,14 @@ def print_primary_summary(criterion: dict[str, object]) -> None:
     print(f"  {criterion['reason']}")
 
 
+def print_selfdual_per_distinct_a(summary: dict[str, object]) -> None:
+    print("\nSelf-dual graph codes per distinct A-enumerator (sharpening only):")
+    print(f"{'n':>7s} {'distinct A':>12s} {'V2/C2 fail':>12s} {'V2oV3/C2 fail':>16s}")
+    for n, item in (*summary["per_n"].items(), ("overall", summary["overall"])):
+        print(f"{n:>7s} {item['n_distinct_A']:12d} {item['n_fail_A_V2_C2']:12d} "
+              f"{item['n_fail_A_V2oV3_C2']:16d}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed", type=int, required=True)
@@ -1057,7 +1095,7 @@ def main() -> None:
     args = parser.parse_args()
     started = time.perf_counter()
     phase_started = started
-    output_path = args.out or Path(__file__).resolve().parent / f"results-seed{args.seed}.json"
+    output_path = args.out or Path(__file__).resolve().parent / f"results-run2-seed{args.seed}.json"
     print(f"seed={args.seed}")
     print(f"python={platform.python_version()}")
     print(f"platform={platform.platform()}")
@@ -1087,6 +1125,7 @@ def main() -> None:
     crosstab = build_crosstab(core_rows, False)
     crosstab_dedup = build_crosstab(dedup_rows, True)
     criterion = build_criterion(dedup_rows)
+    selfdual_per_distinct_a = build_selfdual_per_distinct_a(core_rows)
     print(f"phase experiments/checks: {time.perf_counter() - phase_started:.3f} s")
 
     elapsed = time.perf_counter() - started
@@ -1103,11 +1142,13 @@ def main() -> None:
         "conventions": conventions(), "validation": validation, "codes": codes,
         "crosstab": crosstab, "crosstab_dedup": crosstab_dedup,
         "criterion_mapping": criterion,
+        "selfdual_per_distinct_A": selfdual_per_distinct_a,
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(output, sort_keys=True, separators=(",", ":")) + "\n",
                            encoding="utf-8")
     print_primary_summary(criterion)
+    print_selfdual_per_distinct_a(selfdual_per_distinct_a)
     print(f"\nWall-clock time: {elapsed:.3f} s")
     print(f"JSON: {output_path} ({os.path.getsize(output_path) / (1024 * 1024):.2f} MiB)")
 
