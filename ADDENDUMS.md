@@ -361,3 +361,45 @@ Lorentzian. (This is the exact-zero cell observed at n ≤ 8: 0/31.)
   Type II code is the unique dodecacode (d = 6); H1 at n = 12 therefore
   reduces to a single sequence, and its halved enumerator is either ULC
   or the hypothesis dies at the first genuinely large length.
+
+## 2026-08-11 · Entry 6 — Phase A of the Entry-5 extension: violator identification + LC-orbit census (n ≤ 8)
+
+- **Who:** Claude Opus subagent (independent reimplementation of the
+  Entry-1 conventions; no imports from sweep.py), directed by the
+  orchestrator. Same container image, stdlib only.
+- **Command:**
+  `podman run --rm -v "$PWD":/work:z docker.io/library/python:3.12-slim python /work/test/orbits_n8.py`
+  (Python 3.12.13, deterministic, no seed). Wall-clock 21.3 s; output
+  byte-identical across two runs. Task-1 analysis read only the frozen
+  run-2 artifact.
+- **Task 1 — the two V2∘V3/C2 violators (K1 retro-check):** both are the
+  **GHZ orbits** (star ≅ complete graph under LC):
+  - n=6: A=[1,0,15,0,15,0,33], halved [15,15,33], violation 15² < 15·33;
+    Type II, d=2 vs dmaxII(6)=4. Carried by graph-6-00071 (K_{1,5}) and
+    graph-6-00155 (K₆).
+  - n=8: A=[1,0,28,0,70,0,28,0,129], halved [28,70,28,129], violation
+    28² < 70·129; Type II, d=2 vs dmaxII(8)=4. Carried by graph-8-05454
+    (K_{1,7}) and graph-8-12345 (K₈).
+  Both sit at the minimum possible distance — maximally suboptimal.
+  **K1 does NOT fire at n ≤ 8**; GHZ is the anticipated boundary
+  counterexample (entry 4, open problem 1). Independent recheck of all
+  stored check flags on all 13,598 graph records: 0 mismatches.
+- **Task 2 — LC-orbit census (resolves entry-3 F3):** the 13,598 iso
+  classes partition into LC orbits with counts **1, 2, 3, 6, 11, 26, 59,
+  182 (total 290) = Danielsen–Parker exactly** (hard gate). A-enumerator
+  constant on every orbit (proves consistency of both codebases;
+  bivariate data is genuinely LC-invariant). Orbit-weighted A/V2/C2 fail
+  fractions: n=4: 2/6, 5: 7/11, 6: 16/26, 7: 48/59, 8: 152/182 (total
+  225/290 = 0.776, rising with n) — confirms the run-2 direction under
+  canonical census weighting. A/V2∘V3/C2 over Type II orbits: 2/30 =
+  0.067, the two failures being exactly the GHZ orbits.
+- **H1 population at n ≤ 8:** dmaxII = 2, 2, 4, 4 at n = 2, 4, 6, 8;
+  attainers = **7 orbits (39 iso classes), 0 failures** on halved
+  C1+C2+C3. All three distinct n=8 optimal orbits share
+  A=[1,0,0,0,42,0,168,0,45] (halved [42,168,45]); n=6 optimum is the
+  hexacode orbit A=[1,0,0,0,45,0,18].
+- **Audit trail:** `test/orbits_n8.py` committed;
+  `test/results-orbits-n8.json` (227,503 bytes) SHA-256
+  `796203cb606e75f9f26cf478883230776e17ed725c5b92d6cc58d39d4aebed58`.
+- **Bears on:** Entry-5 K1 — not fired at n ≤ 8. H1 remains alive going
+  into the n ≤ 12 database run (entry 7).
