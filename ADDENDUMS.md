@@ -304,3 +304,60 @@ seeded generic control, not a uniform census; recorded as such.
      here): candidate replacements — Lorentzianity of the double/split
      enumerator of Chen–Ren, or of B−A's complete form, or on the
      M-convex-support closure rather than the raw support.
+
+## 2026-08-11 · Entry 5 — Pre-registration of the sharpened hypothesis (extension to n ≤ 12; predates all extension compute)
+
+- **Who:** Claude (Fable 5) orchestrator; web search for data availability
+  and literature.
+- **Data source located:** the Danielsen–Parker classification database
+  (orig. ii.uib.no/~larsed/vncorbits, now 404) survives mirrored at
+  **codetables.de/larsed/vncorbits/**: `thebigselfdualfile.txt.gz` (per-code
+  records: length, distance, decomposability, Type I/II, weight
+  distribution, |Aut|, LC-orbit size, graph6 representative) and
+  `vncorbitsN.g6(.gz)` graph files for n = 1..12 plus `vncorbits14.g6`
+  (indecomposable extremal Type II only). Exact URLs and SHA-256 of every
+  downloaded file to be recorded in the run entry.
+- **Literature check for the sharpened statement (kill-criterion-2
+  analogue): NOT FIRED.** Searched "Type II / even self-dual additive
+  GF(4) weight distribution unimodal | log-concave | extremal shadow"
+  (2026-08-11): the classical literature classifies Type II enumerators
+  and proves extremal ones unique per length (which makes the decisive
+  check below cheap), but contains no
+  unimodality/log-concavity/Lorentzianity results.
+
+### Frozen hypothesis H1 and kill criteria (before any extension compute)
+
+**H1:** for every even length n in the completed range, every Type II
+(all-even-weight) self-dual additive GF(4) code attaining d = dmaxII(n)
+(the maximum distance among Type II codes of that length, computed within
+the complete classification) has a halved (V2∘V3) A-enumerator that passes
+C1 + C2 + C3 of the Entry-1 conventions — i.e. is ultra-log-concave with
+no internal zeros, equivalently its homogenization is bivariate
+Lorentzian. (This is the exact-zero cell observed at n ≤ 8: 0/31.)
+
+- **K1 (kills H1):** any dmaxII-attaining Type II code at any completed
+  length fails C1, C2, or C3 on its halved enumerator. "Completed length"
+  = both data gates below pass for that n. Applies retroactively: the two
+  V2∘V3/C2-violating distinct enumerators found at n ≤ 8 (entry 4) must be
+  identified; if either belongs to a dmaxII-attaining Type II code, K1
+  fires already at n ≤ 8.
+- **Data gates (per length, hard):** (i) per-length code counts must match
+  the published Danielsen–Parker 2006 tables; (ii) A-enumerators
+  recomputed from the graph6 representatives must equal the database's
+  stored weight distributions (full recomputation where runtime allows,
+  at minimum all Type II codes and all codes at n ≤ 10; any mismatch
+  stops the run for investigation).
+- **Descriptive outputs (NOT kill inputs), frozen now:** fail fractions
+  for non-optimal Type II codes per length (discrimination check — if
+  they also pass at ~100%, H1 is a Type II regularity rather than an
+  optimality signature; either outcome is recorded, neither kills);
+  Type I / odd-n codes under V2; the per-LC-orbit census at n ≤ 8
+  resolving entry-3 F3 (our graph data partitioned into LC orbits by
+  local-complementation closure, counts validated against
+  Danielsen–Parker: 1, 2, 3, 6, 11, 26, 59, 182); exact distance-optimal
+  populations at n ≤ 12 from the census (removing the entry-3 F9
+  sampling bias).
+- **Registered expectation, stated for honesty:** at n = 12 the extremal
+  Type II code is the unique dodecacode (d = 6); H1 at n = 12 therefore
+  reduces to a single sequence, and its halved enumerator is either ULC
+  or the hypothesis dies at the first genuinely large length.
