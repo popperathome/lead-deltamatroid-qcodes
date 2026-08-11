@@ -403,3 +403,60 @@ Lorentzian. (This is the exact-zero cell observed at n ≤ 8: 0/31.)
   `796203cb606e75f9f26cf478883230776e17ed725c5b92d6cc58d39d4aebed58`.
 - **Bears on:** Entry-5 K1 — not fired at n ≤ 8. H1 remains alive going
   into the n ≤ 12 database run (entry 7).
+
+## 2026-08-11 · Entry 7 — Phase B of the Entry-5 extension: full n ≤ 12 census run — **K1 FIRED at n = 12**
+
+- **Who:** codex (gpt-5.6-sol) subagent implementing `test/extend.py`
+  (stdlib-only; from-scratch graph6 decoder), directed by the orchestrator;
+  smoke test (--max-n 8) independently rerun by the wrapper; full run by the
+  orchestrator. Data: Danielsen–Parker database mirror
+  (codetables.de/larsed/vncorbits/), 14 files snapshotted into `test/data/`
+  (SHA-256 of every file recorded inside the results JSON; committed to
+  this repo, 25 MiB, commit 94db6dd).
+- **Command:**
+  `podman run --rm -v "$PWD":/work:z docker.io/library/python:3.12-slim python /work/test/extend.py --max-n 12`
+  (Python 3.12.13, exact integer arithmetic, no numpy). Wall-clock 102.8 s.
+- **Data gates (all PASS):** (i) per-length totals and indecomposable
+  counts match Danielsen–Parker 2006 (arXiv:math/0504522; OEIS
+  A094927/A090899) at every n = 1..12, including n=12:
+  1,323,363 / 1,274,068; (ii) A-enumerators recomputed from graph6
+  representatives match stored weight distributions with 0 mismatches
+  (complete recomputation n ≤ 10; 452 recomputed at n=11, 16,282 at n=12
+  per the frozen policy — all Type II plus stride sample); run-2
+  distinct-A consistency block reproduced exactly.
+- **H1 verdict per even n (dmaxII-attaining Type II codes, halved
+  V2∘V3 enumerator, exact C1+C2+C3):**
+  | n | dmaxII | optimal codes | failures |
+  |---:|---:|---:|---:|
+  | 2 | 2 | 1 | 0 |
+  | 4 | 2 | 2 | 0 |
+  | 6 | 4 | 1 | 0 |
+  | 8 | 4 | 3 | 0 |
+  | 10 | 4 | 19 | 0 |
+  | 12 | 6 | 1 | **1** |
+  All 19 optimal n=10 codes share halved enumerator [30, 300, 585, 108]
+  (C1+C2+C3 pass). The unique optimal n=12 code — the **dodecacode**,
+  d=6, halved enumerator **[396, 1485, 1980, 234]** — passes C1 and C2
+  (log-concave: 1485² ≥ 396·1980, 1980² ≥ 1485·234) but **fails C3
+  (ultra-log-concavity) at index 1: 1485²·C(3,0)·C(3,2) = 6,615,675 <
+  396·1980·C(3,1)² = 7,056,720** (ratio 0.9375). Its homogenization is
+  therefore NOT Lorentzian. **Kill criterion K1 (Entry 5) FIRED.**
+- **n = 14 extremal (outside the frozen completed range, run as labeled
+  supplementary):** all 1,020 extremal Type II codes share halved
+  enumerator [273, 2457, 7098, 6006, 549]; C1+C2+C3 all pass — the ULC
+  failure at n=12 does not recur at n=14 extremal.
+- **Verdict (per the frozen registration, no arguing):** the sharpened
+  hypothesis H1 — "distance-optimal Type II ⇒ Lorentzian (ULC) halved
+  enumerator" — is **DEAD**, killed by the unique optimal code at the
+  first genuinely large length. Recorded observations that are NOT
+  post-hoc rescues but candidate future pre-registrations: (a) plain
+  log-concavity (C1+C2) of the halved enumerator held for **every**
+  dmaxII-attaining Type II code at all n ≤ 12 and all 1,020 extremal
+  n=14 codes; (b) the GHZ orbits remain the only LC violators among all
+  Type II codes at n ≤ 8; (c) the dodecacode sits within 6.3% of the ULC
+  boundary — the strengthening fails narrowly and only at the single
+  most exceptional code in the classification.
+- **Audit trail:** `test/results-extend.json` SHA-256 recorded below at
+  commit time; database snapshot hashes inside the JSON.
+- **Bears on:** Entry-5 K1 — **FIRED** (pending adversarial review of
+  this run, entry 8). Parent-lead kill criteria (entry 1): unaffected.
